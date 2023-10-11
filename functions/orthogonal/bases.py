@@ -140,75 +140,86 @@ def get_legendre_norm_poly(n):
 
 
 
-def make_legendre_arms(n_arms, d, arms):
-    linUCBarms = np.zeros((n_arms, d))
+def legendre_features(x, d):
+    '''
+    Computes legendre polynomial feature map of degree d in points given in x 
 
-    # build linear features from the arms
+    Parameters:
+    x (vector): vector of points where feature map should be evaluated
+    d (int): how many features to use
+
+    Returns:
+    feature_matrix (array): matrix having in each row the evaluation of the feature map in one point
+    '''
+
+    feature_matrix = np.zeros((len(x), d))
     for j in range(d):
         
         # compute degree j legendre polynomial
         coef = get_legendre_poly(j)
-        
-        # apply polynomial to the arms
-        linUCBarms[:,j] = apply_poly(coef, arms)
+        feature_matrix[:,j] = apply_poly(coef, x)
     
-    return linUCBarms
+    return feature_matrix
 
 
-def make_legendre_norm_arms(n_arms, d, arms):
-    linUCBarms = np.zeros((n_arms, d))
+def legendre_norm_features(x, d):
+    '''
+    Computes normalized legendre polynomial feature map of degree d in points given in x 
 
-    # build linear features from the arms
+    Parameters:
+    x (vector): vector of points where feature map should be evaluated
+    d (int): how many features to use
+
+    Returns:
+    feature_matrix (array): matrix having in each row the evaluation of the feature map in one point
+    '''
+
+    feature_matrix = np.zeros((len(x), d))
     for j in range(d):
         
         # compute degree j legendre polynomial
         coef = get_legendre_norm_poly(j)
-        
-        # apply polynomial to the arms
-        linUCBarms[:,j] = apply_poly(coef, arms)
+        feature_matrix[:,j] = apply_poly(coef, x)
     
-    return linUCBarms
+    return feature_matrix
 
 
-def make_legendre_even_arms(n_arms, d, arms):
-    linUCBarms = np.zeros((n_arms, d))
+def legendre_even_features(x, d):
+    '''
+    Computes legendre polynomial feature map WITH ONLY EVEN POLYNOMIALS of degree d in points given in x 
 
-    # build linear features from the arms
+    Parameters:
+    x (vector): vector of points where feature map should be evaluated
+    d (int): how many features to use
+
+    Returns:
+    feature_matrix (array): matrix having in each row the evaluation of the feature map in one point
+    '''
+
+    feature_matrix = np.zeros((len(x), d))
     for j in range(d):
         
-        # compute degree 2j legendre polynomial (not j, here we want only even polynomials)
+        # compute degree j legendre polynomial
         coef = get_legendre_poly(2*j)
-        
-        # apply polynomial to the arms
-        linUCBarms[:,j] = apply_poly(coef, arms)
-
-    return linUCBarms
-
-
-def make_chebishev_arms(n_arms, d, arms):
-    linUCBarms = np.zeros((n_arms, d))
-
-    # build linear features from the arms
-    for j in range(d):
-        linUCBarms[:,j] = np.cos(j*np.arccos(arms))
+        feature_matrix[:,j] = apply_poly(coef, x)
     
-    return linUCBarms
+    return feature_matrix
 
 
-def make_chebishev_even_arms(n_arms, d, arms):
-    linUCBarms = np.zeros((n_arms, d))
 
-    # build linear features from the arms
-    for j in range(d):
-        linUCBarms[:,j] = np.cos((2*j)*np.arccos(arms))
-    
-    return linUCBarms
+def poly_features(x, d):
+    '''
+    Computes standard polynomial feature map of degree d in points given in x 
 
+    Parameters:
+    x (vector): vector of points where feature map should be evaluated
+    d (int): how many features to use
 
-def make_poly_arms(n_arms, d, arms):
-    linUCBarms = np.zeros((n_arms, d))
+    Returns:
+    feature_matrix (array): matrix having in each row the evaluation of the feature map in one point
+    '''
+    feature_matrix = np.zeros((len(x), d))
 
-    # build linear features from the arms
     for j in range(d):
         
         # compute degree j standard polynomial
@@ -216,6 +227,6 @@ def make_poly_arms(n_arms, d, arms):
         coef[j] = 1.
         
         # apply polynomial to the arms
-        linUCBarms[:,j] = apply_poly(coef, arms)
+        feature_matrix[:,j] = apply_poly(coef, x)
     
-    return linUCBarms
+    return feature_matrix
