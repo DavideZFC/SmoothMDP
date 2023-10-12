@@ -1,11 +1,13 @@
 from functions.misc.merge_feature_maps import *
 from functions.orthogonal.bases import *
+from classes.environments.CMAB import CMAB
+from classes.agents.OBlinUCB import OBlinUCB
 
 import numpy as np
 
 
-x = np.linspace(-1.,1.,10)
+env = CMAB()
+policy = OBlinUCB(basis = 'poly', N=3)
 
+print(policy.pull_arm())
 
-feature_map_x = poly_features(x, d=3)
-print(feature_map_x)
