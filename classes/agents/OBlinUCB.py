@@ -54,11 +54,12 @@ class OBlinUCB:
     def pull_arm(self):        
         # ask what arm to pull
         _, arm = self.learner.pull_arm()
+        self.last_arm_pulled = arm
         return np.array([self.X[arm],self.Y[arm]])
     
-    def update(self, arm, reward):
+    def update(self, reward):
         # pass from arm index to arm vector
-        arm_vector = self.linarms[arm,:]
+        arm_vector = self.linear_arms[self.last_arm_pulled,:]
         # update base learner
         self.learner.update(arm_vector, reward)
 

@@ -6,7 +6,7 @@ class CMAB:
     Class to make continous MAB envornment
     '''
 
-    def __init__(self, sigma=0.1, curve='gaussian', seed = 257):
+    def __init__(self, sigma=0.5, curve='gaussian', seed = 257):
         '''
         Defines the variables in the environment
 
