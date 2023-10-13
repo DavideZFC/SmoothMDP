@@ -10,6 +10,17 @@ from functions.misc.confidence_bounds import bootstrap_ci
 import matplotlib.pyplot as plt
 
 def make_experiment(policies, env, T, seeds, labels, exp_name=''):
+    '''
+    Performs a CAB experiment, estimating the reward curve and saving the data in a given folder
+
+    Parameters:
+        policies (list): list of policies to be tested
+        env (class environment): environment over which to test the policies
+        T (int): time horizon
+        seeds (int): how many random seed to use in the experiment
+        labels (list): list with the same length of policies giving a name to each one
+        exp_name (string): string to be added to the filder created to same the data    
+    '''
 
     # create folder
     tail = datetime.datetime.now().strftime("%y_%m_%d-%H_%M_")

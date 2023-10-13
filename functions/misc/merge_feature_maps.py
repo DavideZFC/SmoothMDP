@@ -3,12 +3,12 @@ import numpy as np
 
 def merge_feature_maps(phi):
     '''
-        This function merges some feature maps
+    This function merges some feature maps
 
-        Parameters:
+    Parameters:
         phi (list): list of feature maps we want to merge. They are collected in a list, each of the elements being a vector of fixed length
 
-        Returns:
+    Returns:
         full_feature (array): matrix containing the combined feature matrix evaluated in all the original points
     '''
     num_maps = len(phi)
