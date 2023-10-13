@@ -7,7 +7,7 @@ from classes.agents.OBlinUCB import OBlinUCB
 import numpy as np
 import matplotlib.pyplot as plt
 
-deg = 5
+deg = 2
 exp_name = 'poly_cosin_sincos_legendre_{}'.format(deg)
 seeds = 3
 T = 5000
