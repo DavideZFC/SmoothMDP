@@ -1,19 +1,18 @@
-from functions.misc.merge_feature_maps import *
-from functions.misc.make_experiment import make_experiment
-from functions.orthogonal.bases import *
-from classes.environments.CMAB import CMAB
-from classes.agents.OBlinUCB import OBlinUCB
+import gym
+from classes.auxiliari.Replay_buffer import Replay_buffer
 
-import numpy as np
-import matplotlib.pyplot as plt
+env = gym.make('Pendulum-v1')
 
-deg = 2
-exp_name = 'poly_cosin_sincos_legendre_{}'.format(deg)
-seeds = 3
-T = 5000
+buffer = Replay_buffer(state_space_dim=env.observation_space.shape[0], action_space_dim=env.action_space.shape[0], numel=10000)
 
-env = CMAB()
-policies = [OBlinUCB(basis = 'poly', N=deg), OBlinUCB(basis = 'cosin', N=deg), OBlinUCB(basis = 'sincos', N=deg), OBlinUCB(basis = 'legendre', N=deg)]
-labels = ['poly', 'cosin', 'sincos', 'legendre']
+state = env.reset()
+done = False
+while not done:
+    action = env.action_space.sample()
+    next_state, reward, terminated, truncated, _ = env.step(action)
+    done = terminated or truncated
 
-make_experiment(policies, env, T, seeds, labels, exp_name=exp_name)
+    buffer.memorize(state[0], action, next_state[0], reward)
+    state = next_state
+
+print(buffer.state_action_buffer)
