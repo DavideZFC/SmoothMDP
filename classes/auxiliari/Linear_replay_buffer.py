@@ -6,7 +6,7 @@ from functions.orthogonal.bases import *
 class Linear_replay_buffer:
     # problema, l'ortogonalità se ne vaffanculo
 
-    def __init__(self, basis, approx_degree, state_space_dim, action_space_dim, numel):
+    def __init__(self, basis, approx_degree, state_space_dim, action_space, numel):
 
         if basis == 'poly':
             self.feature_map = poly_features
@@ -20,13 +20,16 @@ class Linear_replay_buffer:
         self.approx_degree = approx_degree
 
         self.state_space_dim = state_space_dim
-        self.action_space_dim = action_space_dim
+        self.action_space_dim = action_space.shape[0]
+        self.build_action_mesh(action_space)
 
-        self.state_action_buffer = np.zeros((numel, state_space_dim + action_space_dim))
+        self.state_action_buffer = np.zeros((numel, state_space_dim + action_space.shape[0]))
         self.next_state_buffer = np.zeros((numel, state_space_dim))
         self.reward_buffer = np.zeros(numel)
 
         self.current_index = 0
+
+
 
     def memorize(self, state, action, next_state, reward):
 
@@ -37,6 +40,8 @@ class Linear_replay_buffer:
 
         self.current_index += 1
 
+
+
     def linear_converter(self):
 
         feature_maps = []
@@ -44,6 +49,9 @@ class Linear_replay_buffer:
             feature_maps.append(self.feature_map(self.state_action_buffer[:self.current_index, i], d=self.approx_degree))
 
         self.full_feature_map = merge_feature_maps(feature_maps)
+
+
+
 
     def build_action_mesh(self, action_space, discretize=200):
         
@@ -54,12 +62,16 @@ class Linear_replay_buffer:
 
         self.action_features = self.feature_map(self.action_grid, d=self.approx_degree)
 
+
+
     def build_next_state_action_mesh(self, state):
 
         state_repeated = np.repeat(state[np.newaxis, :], self.action_grid.shape[0], axis=0)
 
         return np.append(state_repeated, self.action_grid.reshape(-1,1), axis=1)
     
+
+
 
     def build_next_state_action_feature_map(self, state=0):
 
@@ -73,6 +85,13 @@ class Linear_replay_buffer:
             feature_maps.append(self.feature_map(aux_buffer[:, i], d=self.approx_degree))
 
         return merge_feature_maps(feature_maps)
+
+
+
+    def compute_covariance_matrix(self):
+        self.linear_converter()
+        return np.dot(self.full_feature_map.T,self.full_feature_map)
+
 
 
         
