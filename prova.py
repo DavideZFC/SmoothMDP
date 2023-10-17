@@ -4,16 +4,18 @@ from classes.agents.LSVI import LSVI
 import matplotlib.pyplot as plt
 import numpy as np
 from classes.environments.Pendulum import Pendulum
+from classes.environments.Continuous_MountainCarEnv import Continuous_MountainCarEnv
 
 # env = gym.make('Pendulum-v1')
 env = Pendulum()
+# env = Continuous_MountainCarEnv()
 
 buffer = Linear_replay_buffer(basis='legendre', approx_degree=3, state_space_dim=env.observation_space.shape[0], action_space=env.action_space, numel=10000)
 agent = LSVI(buffer, time_horizon=200)
 
 
 
-K = 20
+K = 30
 rewards = np.zeros(200*K)
 rew_index = 0
 
@@ -37,6 +39,7 @@ for k in range(K):
         agent.replay_buffer.memorize(state, action, next_state, reward)
         state = next_state
         h += 1
+
 
     agent.compute_q_values()
 
