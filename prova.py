@@ -3,15 +3,17 @@ from classes.auxiliari.Linear_replay_buffer import Linear_replay_buffer
 from classes.agents.LSVI import LSVI
 import matplotlib.pyplot as plt
 import numpy as np
+from classes.environments.Pendulum import Pendulum
 
-env = gym.make('Pendulum-v1')
+# env = gym.make('Pendulum-v1')
+env = Pendulum()
 
-buffer = Linear_replay_buffer(basis='poly', approx_degree=3, state_space_dim=env.observation_space.shape[0], action_space=env.action_space, numel=10000)
+buffer = Linear_replay_buffer(basis='legendre', approx_degree=3, state_space_dim=env.observation_space.shape[0], action_space=env.action_space, numel=10000)
 agent = LSVI(buffer, time_horizon=200)
 
 
 
-K = 40
+K = 20
 rewards = np.zeros(200*K)
 rew_index = 0
 
@@ -24,6 +26,7 @@ for k in range(K):
     while not done:
         # action = env.action_space.sample()
         action = agent.choose_action(state, h)
+
         next_state, reward, terminated, truncated, _ = env.step(action)
 
         rewards[rew_index] = reward
