@@ -7,6 +7,16 @@ class Linear_replay_buffer:
     # problema, l'ortogonalità se ne vaffanculo
 
     def __init__(self, basis, approx_degree, state_space_dim, action_space, numel):
+        '''
+        Initializes the algorithm.
+
+        Parameters:
+            basis (str): name of the basis function used for the buffer
+            approx_degree (int): maximum degree of the polynomials/trigonometric functions used
+            state_space_dim (int): length of the state vector
+            action_space (gym.ActionSpace): action space of the environment
+            numel (int): size of the buffer 
+        '''
 
         if basis == 'poly':
             self.feature_map = poly_features
@@ -21,7 +31,8 @@ class Linear_replay_buffer:
 
         self.state_space_dim = state_space_dim
         self.action_space_dim = action_space.shape[0]
-        self.build_action_mesh(action_space)
+        self.action_space = action_space
+        self.build_action_mesh()
 
         self.state_action_buffer = np.zeros((numel, state_space_dim + action_space.shape[0]))
         self.next_state_buffer = np.zeros((numel, state_space_dim))
@@ -32,6 +43,15 @@ class Linear_replay_buffer:
 
 
     def memorize(self, state, action, next_state, reward):
+        '''
+        Store one transition of the environment into the buffer
+
+        Parameters:
+            state (vector): observed state
+            action (vector): action performed
+            next_state (vector): state after transition
+            reward (double): reward received
+        '''
 
         self.state_action_buffer[self.current_index, :self.state_space_dim] = state
         self.state_action_buffer[self.current_index, self.state_space_dim:] = action
@@ -43,6 +63,9 @@ class Linear_replay_buffer:
 
 
     def linear_converter(self):
+        '''
+        Converts the state_action buffer into the corresponding feature map representation
+        '''
 
         feature_maps = []
         for i in range(self.state_space_dim+self.action_space_dim):
@@ -53,18 +76,34 @@ class Linear_replay_buffer:
 
 
 
-    def build_action_mesh(self, action_space, discretize=200):
+    def build_action_mesh(self, discretize=200):
+        '''
+        Discretizes the action space and converts it according to the feature map
+
+        Parameters:
+            discretize (int): how many elements put in the discretization
+        '''
         
-        dim = action_space.shape[0]
+        dim = self.action_space.shape[0]
 
         # this only works for action space dim = 1!!
-        self.action_grid = np.linspace(action_space.low[0], action_space.high[0], discretize)
+        self.action_grid = np.linspace(self.action_space.low[0], self.action_space.high[0], discretize)
 
         self.action_features = self.feature_map(self.action_grid, d=self.approx_degree)
 
 
 
     def build_next_state_action_mesh(self, state):
+        '''
+        Given one state, returns a matrix where the state is repreated in the first 
+        columns and in the last we have the discretization of the state space
+
+        Parameters:
+            state (vector): state
+
+        Returns:
+            _ (array): matrix made in this way
+        '''
 
         state_repeated = np.repeat(state[np.newaxis, :], self.action_grid.shape[0], axis=0)
 
@@ -74,9 +113,16 @@ class Linear_replay_buffer:
 
 
     def build_next_state_action_feature_map(self, state=0):
+        '''
+        Calls the function build_next_state_action_mesh() andthen converts the result according to the
+        feature map
 
-        if state == 0:
-            state = self.next_state_buffer[0,:]
+        Parameters:
+            state (vector): state
+
+        Returns:
+            _ (array): feature map applies to the array       
+        '''
 
         aux_buffer = self.build_next_state_action_mesh(state=state)
 
@@ -89,6 +135,12 @@ class Linear_replay_buffer:
 
 
     def compute_covariance_matrix(self):
+        '''
+        Computes the covariance matrix (= design matrix) of the feature transformation of the replay buffer
+
+        Retruns:
+            _ (array): covariance matrix
+        '''
         self.linear_converter()
         return np.dot(self.full_feature_map.T,self.full_feature_map)
 
