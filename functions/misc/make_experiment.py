@@ -9,7 +9,7 @@ from functions.misc.plot_data import plot_data
 from functions.misc.confidence_bounds import bootstrap_ci
 import matplotlib.pyplot as plt
 
-def make_experiment(policies, env, T, seeds, labels, exp_name=''):
+def make_experiment(policies, env, seeds, K, labels, exp_name=''):
     '''
     Performs a CAB experiment, estimating the reward curve and saving the data in a given folder
 
@@ -42,7 +42,7 @@ def make_experiment(policies, env, T, seeds, labels, exp_name=''):
         t0 = time.time()
 
         # test the algorithm
-        results = Parallel(n_jobs=seeds)(delayed(test_algorithm)(policies[i], env, T, seeds=1, first_seed=seed) for seed in range(seeds))
+        results = Parallel(n_jobs=seeds)(delayed(test_algorithm)(policies[i], env, seeds=1, K=K, first_seed=seed) for seed in range(seeds))
 
         # store time
         t1 = time.time()
@@ -59,7 +59,7 @@ def make_experiment(policies, env, T, seeds, labels, exp_name=''):
         low, high = bootstrap_ci(results)
 
         # make plot
-        plot_data(np.arange(0,T), low, high, col='C{}'.format(i), label=labels[i])
+        plot_data(np.arange(0,env.time_horizon*K), low, high, col='C{}'.format(i), label=labels[i])
 
         # save data in given folder
         np.save(dir+labels[i], results)
@@ -69,5 +69,5 @@ def make_experiment(policies, env, T, seeds, labels, exp_name=''):
         json.dump(running_times, f)
     
     plt.legend()
-    plt.title('Regret curves')
-    plt.savefig(dir+'regret_plot.pdf')
+    plt.title('Reward curves')
+    plt.savefig(dir+'reward_plot.pdf')

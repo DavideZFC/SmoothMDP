@@ -4,9 +4,8 @@ from functions.misc.build_mesh import build_mesh
 from functions.orthogonal.bases import *
 
 class Linear_replay_buffer:
-    # problema, l'ortogonalità se ne vaffanculo
 
-    def __init__(self, basis, approx_degree, state_space_dim, action_space, numel):
+    def __init__(self, basis, approx_degree, state_space_dim, action_space, numel, discretize=200):
         '''
         Initializes the algorithm.
 
@@ -32,7 +31,7 @@ class Linear_replay_buffer:
         self.state_space_dim = state_space_dim
         self.action_space_dim = action_space.shape[0]
         self.action_space = action_space
-        self.build_action_mesh()
+        self.build_action_mesh(discretize=discretize)
 
         self.state_action_buffer = np.zeros((numel, state_space_dim + action_space.shape[0]))
         self.next_state_buffer = np.zeros((numel, state_space_dim))
@@ -40,6 +39,8 @@ class Linear_replay_buffer:
 
         self.current_index = 0
 
+    def reset(self):
+        self.current_index = 0
 
 
     def memorize(self, state, action, next_state, reward):

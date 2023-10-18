@@ -1,10 +1,20 @@
 import numpy as np
+from classes.auxiliari.Linear_replay_buffer import Linear_replay_buffer
 
 class LSVI:
 
-    def __init__(self, replay_buffer, time_horizon, lam=1, beta=1):
+    def __init__(self, basis, approx_degree, state_space_dim, action_space, numel, discretize, time_horizon, lam=1, beta=1):
+        '''
+        Initialize the algorithm
+
+        Parameters:
+            replay_buffer (class Linear_replay_buffer): where to store the information
+            time horizon (int): time horizon for the problem
+            lam (double): lambda parameter for LSVI
+            beta (double): beta parameter for LSVI
+        '''
         
-        self.replay_buffer = replay_buffer
+        self.replay_buffer = Linear_replay_buffer(basis, approx_degree, state_space_dim, action_space, numel, discretize)
         self.time_horizon = time_horizon
 
         self.replay_buffer.linear_converter()
@@ -15,14 +25,33 @@ class LSVI:
         self.beta = beta
 
         self.covariance_matrix = self.lam*np.identity(self.dim)
+        self.anticov = np.linalg.inv(self.covariance_matrix)
+
+    def reset(self):
+        '''
+        Come back to the original settings
+        '''
+        self.replay_buffer.reset()
+
+        self.w_vectors *= 0
+
+        self.covariance_matrix = self.lam*np.identity(self.dim)
+        self.anticov = np.linalg.inv(self.covariance_matrix)
 
 
     def update_buffer(self):
+        '''
+        Tells the replay buffer recompute its features
+        '''
         self.replay_buffer.linear_converter()
 
 
     def compute_q_values(self):
+        '''
+        Computes the vectors w for every timestep
+        '''
         self.covariance_matrix = self.replay_buffer.compute_covariance_matrix() + self.lam*np.identity(self.dim)
+        self.anticov = np.linalg.inv(self.covariance_matrix)
 
         self.w_vectors[self.time_horizon - 1] = self.compute_w_step(next_w=0, last_step=True)
         for h in range(2,self.time_horizon+1):
@@ -30,18 +59,37 @@ class LSVI:
 
 
     def get_best_future_q(self, state=0, next_w=None):
+        '''
+        Returns the optimal state value function estimated for a given state
+
+        Parameters:
+            state (vector): state in which I want to measure the optimal state value function
+            next_w (vector): vector of the coefficients of the Q function for the next iteration
+
+        Returns:
+            _ (double): optimal state value function estimated
+        '''
         variable_action_mesh = self.replay_buffer.build_next_state_action_feature_map(state)
 
-        anticov = np.linalg.inv(self.covariance_matrix)
+        # anticov = np.linalg.inv(self.covariance_matrix)
         bonus_vector = np.zeros(variable_action_mesh.shape[0])
         for i in range(variable_action_mesh.shape[0]):
-            bonus_vector[i] = np.dot(np.dot(variable_action_mesh[i,:].T, anticov), variable_action_mesh[i,:])**0.5
+            bonus_vector[i] = np.dot(np.dot(variable_action_mesh[i,:].T, self.anticov), variable_action_mesh[i,:])**0.5
 
         return np.max(np.dot(variable_action_mesh,next_w) + self.beta*bonus_vector)
     
 
     def compute_w_step(self, next_w, last_step=False):
+        '''
+        Computes the w parameter corresponding to this step
 
+        Parameters:
+            next_w (vector): w parameter of the next step
+            last step (bool): says if this is the last step (in such case, next_w is useless)
+
+        Returns:
+            _ (vector): the w vector
+        '''
         load = np.zeros(self.dim)
         if last_step:
             for i in range(self.replay_buffer.current_index):
@@ -53,6 +101,17 @@ class LSVI:
         return np.linalg.solve(self.covariance_matrix, load)
     
     def choose_action(self, state, h):
+        '''
+        Chooses which action to perform based on the current state
+
+        Parameters:
+            state (vector): current state
+            h (int): current timestep
+        
+        Returns:
+            _ (vector): action to be performed on the environment
+        '''
+
         variable_action_mesh = self.replay_buffer.build_next_state_action_feature_map(state)
 
         anticov = np.linalg.inv(self.covariance_matrix)

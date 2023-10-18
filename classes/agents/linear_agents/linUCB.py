@@ -10,10 +10,11 @@ class linUBC:
         Initialize algorithm
 
         Parameters:
-        arms matrix (array): matrix having the vectors corresponding to the arms as rows
-        m (double): upper bound on the norm of theta
-        T (int): time horizon
-        exp (double): dependence of the error probability on the time horizon
+            arms matrix (array): matrix having the vectors corresponding to the arms as rows
+            lam (double): lambda coefficient of ridge regression
+            m (double): upper bound on the norm of theta
+            T (int): time horizon
+            exp (double): dependence of the error probability on the time horizon
         '''
 
         # dimension of the arms
@@ -65,10 +66,10 @@ class linUBC:
         Computes 2-norm of a vector
     
         Parameters:
-        v (vector)
+            v (vector)
 
         Returns:
-        _: norm of v
+            _: norm of v
         '''
         return (np.sum(v**2))**0.5
 
@@ -91,8 +92,8 @@ class linUBC:
         Updates internal variable after receiving a reward
     
         Prameters:
-        arm (int): which arm was pulled
-        reward (double): observed reward
+            arm (int): which arm was pulled
+            reward (double): observed reward
         '''
         self.design_matrix += np.matmul(arm.reshape(-1,1),arm.reshape(1,-1))
         self.load += reward*arm.reshape(-1,1)
@@ -102,11 +103,11 @@ class linUBC:
         Computes the maximum of the linear form (x.T*v)(x.T*A*x) 
         
         Parameters:
-        A (array): matrix A
-        v (vector): vector v
+            A (array): matrix A
+            v (vector): vector v
                 
         Returns:
-        maximum value of the linear form (x.T*v)(x.T*A*x) over x.
+            maximum value of the linear form (x.T*v)(x.T*A*x) over x.
         '''
 
         def diaginv(A):
@@ -145,10 +146,10 @@ class linUBC:
         Given symmetric positive definite matrix, computes matrix A**(-1/2)
             
         Parameters:
-        A (array): matrix A
+            A (array): matrix A
                 
         Retunrs:
-        matrix (array): A**(-1/2)
+            matrix (array): A**(-1/2)
         '''
         
         def diaginv(A):
@@ -188,8 +189,8 @@ class linUBC:
         Chooses which arm to pull
 
         Returns:
-        _ (vector): the vector corresponding to the pulled arm
-        _ (int): index of the pulled arm
+            _ (vector): the vector corresponding to the pulled arm
+            _ (int): index of the pulled arm
         '''
         estimates = np.zeros(self.n_arms)
         thetahat = self.estimate_theta().flatten()
@@ -214,7 +215,7 @@ class linUBC:
         Estimate the unknown vector theta with least squares method
 
         Returns:
-        _ (vector): estimate of theta        
+            _ (vector): estimate of theta        
         '''
         return np.linalg.solve(self.design_matrix, self.load)
 

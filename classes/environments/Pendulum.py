@@ -92,6 +92,7 @@ class Pendulum(gym.Env):
 
     def __init__(self, render_mode: Optional[str] = None, g=10.0):
         # modificato da me, prima era limitato a 8, ma ora devo raddoppiare l'effetto
+        self.time_horizon = 200
         self.max_speed = 1
 
         # modificato da me, prima era limitato a 2, ma ora devo raddoppiare l'effetto
@@ -119,8 +120,9 @@ class Pendulum(gym.Env):
 
     def step(self, u):
         th, thdot = self.state  # th := theta
+        
         self.h += 1
-        done = self.h > 199
+        done = self.h > self.time_horizon - 1
 
         g = self.g
         m = self.m
