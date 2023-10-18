@@ -148,7 +148,7 @@ class Pendulum(gym.Env):
 
         if self.render_mode == "human":
             self.render()
-        return self._get_obs(), -costs, False, done, {}
+        return self._get_obs(), -costs/10+1, False, done, {}
 
     def reset(self, *, seed: Optional[int] = None, options: Optional[dict] = None):
         super().reset(seed=seed)

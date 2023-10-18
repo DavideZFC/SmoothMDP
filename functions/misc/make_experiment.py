@@ -42,6 +42,7 @@ def make_experiment(policies, env, seeds, K, labels, exp_name=''):
         t0 = time.time()
 
         # test the algorithm
+
         results = Parallel(n_jobs=seeds)(delayed(test_algorithm)(policies[i], env, seeds=1, K=K, first_seed=seed) for seed in range(seeds))
 
         # store time
@@ -63,6 +64,19 @@ def make_experiment(policies, env, seeds, K, labels, exp_name=''):
 
         # save data in given folder
         np.save(dir+labels[i], results)
+
+        window = 500
+        weights = np.repeat(1.0, window)/window
+        reward_smoothed = np.zeros((seeds, results.shape[1]-window+1))
+
+        for seed in range(seeds):
+            reward_smoothed[seed,:] = np.convolve(results[seed,:], weights, 'valid')
+
+        # make nonparametric confidence intervals
+        low, high = bootstrap_ci(reward_smoothed)
+
+        # make plot
+        plot_data(np.arange(0,len(low)), low, high, col='C{}'.format(i+1), label=labels[i]+' smooth')
 
     with open(dir+"running_times.json", "w") as f:
         # Convert the dictionary to a JSON string and write it to the file

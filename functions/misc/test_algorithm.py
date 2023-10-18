@@ -19,6 +19,7 @@ def test_algorithm(agent, env, seeds, K=30, first_seed=1):
     reward_matrix = np.zeros((seeds, T))
     np.random.seed(first_seed)
 
+
     for seed in range(seeds):
         rew_index = 0
 
@@ -45,7 +46,8 @@ def test_algorithm(agent, env, seeds, K=30, first_seed=1):
 
             agent.compute_q_values()
 
+        
         agent.reset()
-    
+            
     return reward_matrix
 
