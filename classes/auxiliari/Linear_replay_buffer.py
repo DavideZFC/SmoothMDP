@@ -73,6 +73,7 @@ class Linear_replay_buffer:
             feature_maps.append(self.feature_map(self.state_action_buffer[:self.current_index, i], d=self.approx_degree))
 
         self.full_feature_map = merge_feature_maps(feature_maps)
+        self.full_feature_map /= (self.full_feature_map.shape[1]**0.5)
 
 
 

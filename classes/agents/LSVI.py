@@ -3,7 +3,7 @@ from classes.auxiliari.Linear_replay_buffer import Linear_replay_buffer
 
 class LSVI:
 
-    def __init__(self, basis, approx_degree, state_space_dim, action_space, numel, discretize, time_horizon, lam=1, beta=1):
+    def __init__(self, basis, approx_degree, state_space_dim, action_space, numel, discretize, time_horizon, lam=1, beta=10):
         '''
         Initialize the algorithm
 
