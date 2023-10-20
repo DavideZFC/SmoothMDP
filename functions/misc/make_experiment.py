@@ -57,10 +57,10 @@ def make_experiment(policies, env, seeds, K, labels, exp_name=''):
         results = np.concatenate(results, axis=0)
 
         # make nonparametric confidence intervals
-        low, high = bootstrap_ci(results)
+        # low, high = bootstrap_ci(results)
 
         # make plot
-        plot_data(np.arange(0,env.time_horizon*K), low, high, col='C{}'.format(i), label=labels[i])
+        # plot_data(np.arange(0,env.time_horizon*K), low, high, col='C{}'.format(i), label=labels[i])
 
         # save data in given folder
         np.save(dir+labels[i], results)

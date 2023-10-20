@@ -27,6 +27,12 @@ class LSVI:
         self.covariance_matrix = self.lam*np.identity(self.dim)
         self.anticov = np.linalg.inv(self.covariance_matrix)
 
+    def compute_optimal_beta(self, K, c=1, miss=0.01):
+        prob = 0.01
+        iota = np.log(2*self.dim*(K*self.time_horizon)/prob)
+        self.beta = c*(self.dim*iota**0.5+miss*np.sqrt(K*self.dim))*self.time_horizon
+        print(self.beta)
+
     def reset(self):
         '''
         Come back to the original settings

@@ -1,13 +1,6 @@
-import gym
-from classes.auxiliari.Linear_replay_buffer import Linear_replay_buffer
+
 from classes.agents.LSVI import LSVI
-import matplotlib.pyplot as plt
-import numpy as np
-from classes.environments.Pendulum import Pendulum
-from classes.environments.Continuous_MountainCarEnv import Continuous_MountainCarEnv
 from classes.environments.PQR import PQR
-import time
-from functions.misc.test_algorithm import test_algorithm
 from functions.misc.make_experiment import make_experiment
 
 # env = gym.make('Pendulum-v1')
