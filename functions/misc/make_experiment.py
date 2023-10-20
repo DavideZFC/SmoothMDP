@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 
 def make_experiment(policies, env, seeds, K, labels, exp_name=''):
     '''
-    Performs a CAB experiment, estimating the reward curve and saving the data in a given folder
+    Performs a RL experiment, estimating the reward curve and saving the data in a given folder
 
     Parameters:
         policies (list): list of policies to be tested

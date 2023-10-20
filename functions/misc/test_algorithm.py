@@ -1,6 +1,7 @@
 import numpy as np
+from copy import deepcopy
 
-def test_algorithm(agent, env, seeds, K=30, first_seed=1):
+def test_algorithm(agent0, env, seeds, K=30, first_seed=1):
     '''
     Test a given policy on an environment and returns the regret estimated over some different random seeds
 
@@ -18,6 +19,8 @@ def test_algorithm(agent, env, seeds, K=30, first_seed=1):
     T = H*K
     reward_matrix = np.zeros((seeds, T))
     np.random.seed(first_seed)
+
+    agent = deepcopy(agent0)
 
 
     for seed in range(seeds):
@@ -40,7 +43,7 @@ def test_algorithm(agent, env, seeds, K=30, first_seed=1):
 
                 done = terminated or truncated
 
-                agent.replay_buffer.memorize(state, action, next_state, reward)
+                agent.memorize(state, action, next_state, reward)
                 state = next_state
                 h += 1
 

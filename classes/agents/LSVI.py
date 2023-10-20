@@ -33,6 +33,9 @@ class LSVI:
         self.beta = c*(self.dim*iota**0.5+miss*np.sqrt(K*self.dim))*self.time_horizon
         print(self.beta)
 
+    def memorize(self, state, action, next_state, reward):
+        self.replay_buffer.memorize(state, action, next_state, reward)
+
     def reset(self):
         '''
         Come back to the original settings
