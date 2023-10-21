@@ -64,7 +64,7 @@ class LSVI:
 
         self.w_vectors[self.time_horizon - 1] = self.compute_w_step(next_w=0, last_step=True)
         for h in range(2,self.time_horizon+1):
-            self.w_vectors[self.time_horizon - h] = self.compute_w_step(next_w=self.w_vectors[self.time_horizon - h + 1], last_step=True)
+            self.w_vectors[self.time_horizon - h] = self.compute_w_step(next_w=self.w_vectors[self.time_horizon - h + 1], last_step=False)
 
 
     def get_best_future_q(self, state=0, next_w=None):
