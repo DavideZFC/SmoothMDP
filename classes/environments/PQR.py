@@ -37,7 +37,7 @@ class PQR(gym.Env):
 
         cost = self.state_cost*np.sum(self.state**2) + self.action_cost*u**2
 
-        self.state = np.dot(self.A, self.state) + self.u*u + np.random.normal(scale=0.2, size=2)
+        self.state = np.dot(self.A, self.state) + self.u*u + np.random.normal(scale=0.1, size=2)
         self.h += 1
         done = self.h > self.time_horizon - 1
 
@@ -49,7 +49,7 @@ class PQR(gym.Env):
 
     def reset(self, *, seed: Optional[int] = None, options: Optional[dict] = None):
         super().reset(seed=seed)
-        self.state = np.array([0., 0.])+np.random.uniform(low=-0.5, high=0.5)*np.array([1., 1.])
+        self.state = np.array([-0.7, -0.7])+np.random.uniform(low=0, high=0.2)*np.array([1., 1.])
         self.h = 0
 
         return self._get_obs(), {}

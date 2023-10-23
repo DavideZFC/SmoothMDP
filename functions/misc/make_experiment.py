@@ -9,7 +9,7 @@ from functions.misc.plot_data import plot_data
 from functions.misc.confidence_bounds import bootstrap_ci
 import matplotlib.pyplot as plt
 
-def make_experiment(policies, env, seeds, K, labels, exp_name=''):
+def make_experiment(policies, env, seeds, K, labels, window=None, exp_name=''):
     '''
     Performs a RL experiment, estimating the reward curve and saving the data in a given folder
 
@@ -31,6 +31,9 @@ def make_experiment(policies, env, seeds, K, labels, exp_name=''):
 
     # in this dictionary, we store the running times of the algorithms
     running_times = {}
+
+    if window is None:
+        window = env.time_horizon
 
     
     for i in range(len(policies)):
@@ -65,7 +68,6 @@ def make_experiment(policies, env, seeds, K, labels, exp_name=''):
         # save data in given folder
         np.save(dir+labels[i], results)
 
-        window = 500
         weights = np.repeat(1.0, window)/window
         reward_smoothed = np.zeros((seeds, results.shape[1]-window+1))
 

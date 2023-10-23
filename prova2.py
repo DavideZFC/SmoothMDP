@@ -4,10 +4,10 @@ from classes.environments.Pendulum import Pendulum
 from classes.environments.PQR import PQR
 from functions.misc.make_experiment import make_experiment
 
-K = 10
+K = 100
 numel = 10000
 discretize = 10
-env = Pendulum()
+env = PQR()
 H = env.time_horizon
 
 agent0 = LSVI(basis='legendre', approx_degree=3, state_space_dim=env.observation_space.shape[0], action_space=env.action_space, numel=numel, discretize=discretize, time_horizon=H)
