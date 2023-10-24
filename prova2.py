@@ -4,7 +4,7 @@ from classes.environments.Pendulum import Pendulum
 from classes.environments.PQR import PQR
 from functions.misc.make_experiment import make_experiment
 
-K = 100
+K = 30
 numel = 10000
 discretize = 10
 env = PQR()

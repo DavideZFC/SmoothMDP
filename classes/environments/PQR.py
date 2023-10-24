@@ -13,8 +13,15 @@ DEFAULT_Y = 1.0
 
 
 class PQR(gym.Env):
+    '''
+    environment idea: simulate the linear quadratic regulator in an environment with Poincarè (hyperbolic) geometry.
+    '''
 
     def __init__(self):
+        '''
+        Initialize the environment
+        '''
+
         self.time_horizon = 20
         self.h = 0
 
@@ -25,15 +32,25 @@ class PQR(gym.Env):
         self.state_cost = 1.
 
         self.high = np.array([1.0, 1.0], dtype=np.float32)
-        # This will throw a warning in tests/envs/test_envs in utils/env_checker.py as the space is not symmetric
-        #   or normalised as max_torque == 2 by default. Ignoring the issue here as the default settings are too old
-        #   to update to follow the openai gym api
         self.action_space = spaces.Box(
             low=-1., high=1., shape=(1,), dtype=np.float32
         )
         self.observation_space = spaces.Box(low=-self.high, high=self.high, dtype=np.float32)
 
     def step(self, u):
+        '''
+        Makes one step in the environment
+
+        Parameters:
+            u (vector): action choosen by the agent
+
+        Returns:
+            self._get_obs() (vector): copy of the current state      
+            -cost (double): reward
+            _ : the environment has failed? (always False in this case)
+            done (bool): reached time horizon?
+            _ : useless information
+        '''
 
         cost = self.state_cost*np.sum(self.state**2) + self.action_cost*u**2
 
@@ -48,6 +65,15 @@ class PQR(gym.Env):
         return self._get_obs(), -cost, False, done, {}
 
     def reset(self, *, seed: Optional[int] = None, options: Optional[dict] = None):
+        '''
+        Resets the whole environment
+
+        Parameters:
+            seed (int): Random seed to use
+        
+        Returns:
+            self._get_obs(): copy of the current state
+        '''
         super().reset(seed=seed)
         self.state = np.array([-0.7, -0.7])+np.random.uniform(low=0, high=0.2)*np.array([1., 1.])
         self.h = 0
@@ -55,4 +81,7 @@ class PQR(gym.Env):
         return self._get_obs(), {}
 
     def _get_obs(self):
+        '''
+        Returns copy of the state
+        '''
         return np.copy(self.state)
