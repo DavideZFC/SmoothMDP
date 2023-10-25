@@ -19,6 +19,7 @@ class LSVI:
 
         self.replay_buffer.linear_converter()
         self.dim = self.replay_buffer.full_feature_map.shape[1]
+        print('dimension of the linear problem {}'.format(self.dim))
 
         self.w_vectors = np.zeros((time_horizon, self.dim))
         self.lam = lam

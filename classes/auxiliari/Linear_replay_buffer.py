@@ -38,21 +38,10 @@ class Linear_replay_buffer:
         self.reward_buffer = np.zeros(numel)
 
         self.current_index = 0
-        self.linear_converter_index = 0
 
     def reset(self):
         self.current_index = 0
-        self.covariance_index = 0
-
-
-    def update_cov(self, lam):
-        try:
-            self.cov
-        except:
-            self.cov = lam*np.identity(self.full_feature_map.shape[1])
-
-        self.cov += np.dot(self.full_feature_map[self.covariance_index:, :].T, self.full_feature_map[self.covariance_index:, :])
-        
+      
 
 
 
