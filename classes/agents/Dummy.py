@@ -18,9 +18,13 @@ class Dummy:
         self.replay_buffer.linear_converter()
         self.dim = self.replay_buffer.full_feature_map.shape[1]
         if v_vector is None:
-            v_vector = np.random.uniform(size=self.dim)
+            v_vector = np.random.standard_cauchy(size=self.dim)
         
         self.v_vector = v_vector
+    
+    def refresh(self,i):
+        np.random.seed(i)
+        self.v_vector = np.random.standard_cauchy(size=self.dim)
 
     def reset(self):
         pass
