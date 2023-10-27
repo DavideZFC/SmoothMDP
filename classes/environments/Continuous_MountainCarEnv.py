@@ -17,6 +17,7 @@ class Continuous_MountainCarEnv(gym.Env):
     }
 
     def __init__(self, render_mode: Optional[str] = None, goal_velocity=0):
+        self.time_horizon = 200
         self.min_action = -1.0
         self.max_action = 1.0
         self.min_position = -1.2
@@ -51,7 +52,7 @@ class Continuous_MountainCarEnv(gym.Env):
     def step(self, action: np.ndarray):
 
         self.h += 1
-        done = self.h > 199
+        done = self.h > self.time_horizon - 1
 
         position = self.state[0]
         velocity = self.state[1]
