@@ -5,14 +5,14 @@ from classes.environments.PQR import PQR
 from functions.misc.make_experiment import test_algorithm
 import numpy as np
 
-K = 20
+K = 100
 numel = 10000
 discretize = 20
-iterations = 200
+iterations = 100
 env = PQR()
 H = env.time_horizon
 
-agent0 = Dummy(basis='legendre', approx_degree=3, state_space_dim=env.observation_space.shape[0], action_space=env.action_space, numel=numel, discretize=discretize, v_vector=None)
+agent0 = Dummy(basis='legendre', approx_degree=4, state_space_dim=env.observation_space.shape[0], action_space=env.action_space, numel=numel, discretize=discretize, v_vector=None)
 
 best = -10000
 
@@ -24,6 +24,7 @@ for i in range(iterations):
     if curr > best:
         best = curr
     results[i] = curr
+print(best)
 
 import matplotlib.pyplot as plt
 plt.hist(results)
