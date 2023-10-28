@@ -11,6 +11,8 @@ from stable_baselines3.common.results_plotter import load_results, ts2xy, plot_r
 from stable_baselines3.common.noise import NormalActionNoise
 from stable_baselines3.common.callbacks import BaseCallback
 
+from classes.environments.PQR_stable import PQR
+
 
 class SaveOnBestTrainingRewardCallback(BaseCallback):
     """
@@ -61,7 +63,8 @@ log_dir = "tmp/"
 os.makedirs(log_dir, exist_ok=True)
 
 # Create and wrap the environment
-env = gym.make("Pendulum-v1", render_mode="human")
+# env = gym.make("Pendulum-v1", render_mode="human")
+env = PQR()
 env = Monitor(env, log_dir)
 
 # Add some action noise for exploration
@@ -75,5 +78,8 @@ callback = SaveOnBestTrainingRewardCallback(check_freq=200, log_dir=log_dir)
 timesteps = 1e3
 model.learn(total_timesteps=int(timesteps), callback=callback)
 
-plot_results([log_dir], timesteps, results_plotter.X_TIMESTEPS, "SAC pendulum")
+xy_list = plot_results([log_dir], timesteps, results_plotter.X_TIMESTEPS, "SAC pendulum")
 plt.show()
+
+print(xy_list[0][0])
+print(xy_list[0][1])
