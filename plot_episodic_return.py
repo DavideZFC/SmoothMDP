@@ -8,9 +8,9 @@ from functions.misc.plot_data import plot_data
 from functions.misc.confidence_bounds import bootstrap_ci
 
 # things to change
-time_horizon = 200
-dir = 'results/_23_10_26-13_50_mountain car'
-optimum = -0.0
+time_horizon = 20
+dir = 'results/_31_13_30-11_23_poly vs legendre'
+optimum = None
 
 ##################
 # things to keep
@@ -51,7 +51,8 @@ for l in labels:
 
     print(l+' done')
 
-plt.axhline(y=optimum, color='y', linestyle='--', label='opitmum')
+if optimum is not None:
+    plt.axhline(y=optimum, color='y', linestyle='--', label='opitmum')
 plt.legend()
 plt.title('Episodic Return')
 plt.savefig(dir+'/episodic_return.pdf')
