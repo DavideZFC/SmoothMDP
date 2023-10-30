@@ -75,7 +75,7 @@ model = SAC("MlpPolicy", env, action_noise=action_noise, verbose=0)
 
 callback = SaveOnBestTrainingRewardCallback(check_freq=200, log_dir=log_dir)
 # Train the agent
-timesteps = 1e3
+timesteps = 1e2
 model.learn(total_timesteps=int(timesteps), callback=callback)
 
 xy_list = plot_results([log_dir], timesteps, results_plotter.X_TIMESTEPS, "SAC pendulum")
