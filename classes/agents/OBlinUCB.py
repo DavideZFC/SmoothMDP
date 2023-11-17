@@ -1,4 +1,5 @@
 from classes.agents.linear_agents.linUCB import linUBC
+from classes.agents.linear_agents.PE import PE
 from functions.misc.build_mesh import build_mesh
 from functions.misc.merge_feature_maps import merge_feature_maps
 from functions.orthogonal.bases import *
@@ -6,11 +7,12 @@ import numpy as np
 
 
 class OBlinUCB:
-    def __init__(self, basis, N, dim=2, lam=1, T=10000):
+    def __init__(self, basis, N, dim=2, lam=1, T=10000, pe=False):
 
         # what approximation degree to use
         self.N = N
         self.dim = dim
+        self.pe = pe
 
         # time horizon
         self.T = T
@@ -29,7 +31,10 @@ class OBlinUCB:
             self.feature_map = legendre_features
 
         self.build_arms()
-        self.make_linUCB()
+        if pe:
+            self.make_PE()
+        else:
+            self.make_linUCB()
    
     def build_arms(self, numel=100):
 
@@ -51,9 +56,16 @@ class OBlinUCB:
         # initialize linUCB
         self.learner = linUBC(self.linear_arms, lam=self.lam, T=self.T)
 
+    def make_PE(self):
+        # initialize linUCB
+        self.learner = PE(self.linear_arms, T=self.T)
+
     def pull_arm(self):        
         # ask what arm to pull
-        _, arm = self.learner.pull_arm()
+        if self.pe:
+            arm = self.learner.pull_arm()
+        else:
+            _, arm = self.learner.pull_arm()
         self.last_arm_pulled = arm
         return np.array([self.X[arm],self.Y[arm]])
     
