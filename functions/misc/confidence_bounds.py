@@ -1,6 +1,6 @@
 import numpy as np
 
-def bootstrap_ci(x, conf=0.95, resamples=10000):
+def bootstrap_ci(x, conf=0.95, resamples=500):
     ''' 
     Function to output bootstrap confidence interval
 

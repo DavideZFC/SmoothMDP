@@ -1,0 +1,46 @@
+\documentclass[border=0.2cm]{standalone}
+ 
+% Required Package and Librarie
+\usepackage{pgfplots}
+\pgfplotsset{compat=newest}
+\usepgfplotslibrary{fillbetween}
+ 
+\begin{document}
+ 
+\begin{tikzpicture}
+\begin{axis}[
+    xlabel=Time,
+    ylabel=Cumulative Regret,
+    xmin = 0,
+    ymin = 0,
+    legend style={at={(0.25,0.95)}, font=\footnotesize,anchor=north},
+]
+
+
+\addlegendentry{UCB}
+\addplot[name path = UCBmean,
+    color=blue, line width=1pt]
+    table {data/UCB/mean.txt};
+
+\addplot[name path = UCBlb,
+    color=blue,
+    opacity=0.3,
+    ]
+    table [smooth]{data/UCB/low.txt};
+\addplot[name path = UCBub,
+    color=blue,
+    opacity=0.3,
+    ]
+    table [smooth]{data/UCB/up.txt};
+\addplot[
+    fill=blue,
+    fill opacity=0.3,
+]
+fill between[
+    of=UCBlb and UCBub,
+];
+
+
+\end{axis}
+\end{tikzpicture}
+\end{document}

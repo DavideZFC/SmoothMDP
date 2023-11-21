@@ -1,0 +1,31 @@
+\documentclass[border=0.2cm]{standalone}
+ 
+% Required Package and Librarie
+\usepackage{pgfplots}
+\pgfplotsset{compat=newest}
+\usepgfplotslibrary{fillbetween}
+\usepackage{xcolor}
+
+\definecolor{C0}{RGB}{31, 119, 180}
+\definecolor{C1}{RGB}{255, 127, 14}
+\definecolor{C2}{RGB}{44, 160, 44}
+\definecolor{C3}{RGB}{213, 48, 50}
+\definecolor{C4}{RGB}{148, 103, 189}
+\definecolor{C5}{RGB}{140, 86, 75}
+\definecolor{C6}{RGB}{227, 119, 194}
+\definecolor{C7}{RGB}{127, 127, 127}
+\definecolor{C8}{RGB}{188, 189, 34}
+\definecolor{C8}{RGB}{23, 190, 207}
+ 
+\begin{document}
+ 
+\begin{tikzpicture}
+\begin{axis}[
+    xlabel=Time,
+    ylabel=Cumulative Regret,
+    xmin = 0,
+    ymin = 0,
+    legend style={at={(0.25,0.95)}, font=\footnotesize,anchor=north},
+]
+
+

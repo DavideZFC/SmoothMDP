@@ -1,0 +1,5 @@
+\addlegendentry{H}
+\addplot[name path = Hmean,
+    color=K, line width=1pt]
+    table {data/H/mean.txt};
+

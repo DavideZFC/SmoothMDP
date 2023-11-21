@@ -76,7 +76,7 @@ class dummy_learner:
         current_index = 0
         for i in range(self.n_arms):
             term1 = 2*pi[i]*self.d / (epsilon**2)
-            times_to_pull = int(term1*term2)
+            times_to_pull = int(0.25*term1*term2)
             if times_to_pull > 0:
                 # print('term 1 = {}, eps = {}, pi = {}, d = {}'.format(term1, epsilon, pi[i], self.d))
                 # print('term 2 = {}'.format(term2))
