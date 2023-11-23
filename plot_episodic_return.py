@@ -9,7 +9,7 @@ from functions.misc.confidence_bounds import bootstrap_ci
 
 # things to change
 time_horizon = 20
-dir = 'results/_31_13_30-11_23_poly vs legendre'
+dir = 'results\_31_13_30-11_24_poly vs legendre 2'
 optimum = None
 
 ##################
