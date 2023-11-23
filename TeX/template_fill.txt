@@ -1,0 +1,18 @@
+\addplot[name path = Hlb,
+    color=K,
+    opacity=0.3,
+    ]
+    table [smooth]{data/H/low.txt};
+\addplot[name path = Hub,
+    color=K,
+    opacity=0.3,
+    ]
+    table [smooth]{data/H/up.txt};
+\addplot[
+    fill=K,
+    fill opacity=0.3,
+]
+fill between[
+    of=Hlb and Hub,
+];
+
