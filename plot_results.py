@@ -6,6 +6,17 @@ from functions.misc.plot_data import plot_data
 import os
 
 def filter_and_save(x, v1, v2, dir, filter=10):
+    ''' 
+    Save in a given directory some files containing a table of xy coordinates that can be plotted with latex
+
+    Parameters:
+        x (vector): vector of the x axis
+        v1 (vector): lower bound on the curve to plot
+        v2 (vector): upper bound on the curve to plot
+        dir (string): where to save the files
+        fitler (int): take one data every filter, to use less memory
+    '''
+
     weights = np.ones(filter)/filter
     v1 = np.convolve(v1, weights, 'valid')
     v1 = v1[::filter]
@@ -27,6 +38,18 @@ def filter_and_save(x, v1, v2, dir, filter=10):
         np.savetxt(name, mat)
 
 def plot_label(label, color, filename = 'TeX/template_plot.txt'):
+    '''
+    Open template file and replaces letters H and K with given strings
+
+    Parameters:
+        label (string): what to replace H with
+        color (string): what to replace K with
+        filename (string): where to find the original file
+
+    Returns
+        content (string): what is contained in the new file
+    '''
+
     with open(filename, 'r') as file:
         # read in the contents of the file
         contents = file.read()
@@ -47,7 +70,7 @@ def add_file(filename='TeX/reference_tex.txt'):
     return content
 
 
-dir = 'results\_31_13_30-11_23_poly vs legendreBASE'
+dir = 'results\_31_13_30-11_24_poly vs legendre 2'
 
 with open(dir+"/running_times.json", "r") as f:
     # Convert the dictionary to a JSON string and write it to the file
@@ -92,19 +115,23 @@ for l in labels:
     results = np.load(dir+'/'+l+'.npy')
     seeds = results.shape[0]
 
+    # define uniform function to smooth the reward function
     weights = np.repeat(1.0, time_horizon)
     reward_smoothed = np.zeros((seeds, results.shape[1]-time_horizon+1))
 
+    # make smoothing of the reward
     for seed in range(seeds):
         reward_smoothed[seed,:] = np.convolve(results[seed,:], weights, 'valid')
     
     # make nonparametric confidence intervals
     low, high = bootstrap_ci(reward_smoothed, resamples=1000)
 
+    # take one element every "time_horizon", to have the return of every episode
     low = low[::time_horizon]
     high = high[::time_horizon]
 
     T = len(low)
+    # selects the color for the curve and modifies the label
     color = 'C{}'.format(c)
     true_lab = l.replace('_','')
 
@@ -119,11 +146,11 @@ for l in labels:
     if not os.path.exists(this_dir):
         os.mkdir(this_dir)
     filter_and_save(np.arange(0,T), low, high, this_dir, filter=10)
-
-    # in this part, we prepare the tex file
-
     print(l+' done')
 
+# in this part, we prepare the tex file
+# we cycle on the various value of the label, and for each of them write in the fail main.txt 
+# the commands used make the plot for the given label, which are taken from the pre-existing file 'TeX/reference_tex.txt'
 c = 0
 for l in labels:
     color = 'C{}'.format(c)
@@ -132,6 +159,8 @@ for l in labels:
     with open(new_dir+'/main.txt', 'a') as new_file:
         new_file.write(plot_label(true_lab, color))
 
+# we do as before, but this time instead of just plotting the curve, we make a colores confidence interval
+# and the pre-existing file is 'TeX/template_fill.txt'
 c = 0
 for l in labels:
     color = 'C{}'.format(c)
