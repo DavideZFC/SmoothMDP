@@ -36,10 +36,17 @@ class CMAB:
         '''
 
         # Cinfty even
-        if (curve == 'gaussian'):
+        if curve == 'gaussian':
             def curve(x):
                 return np.exp(-x[0]**2-x[1]**2)
             self.xopt = np.zeros(2)
+            self.opt = curve(self.xopt)
+            self.d = 2
+
+        if curve == 'glass':
+            def curve(x):
+                return np.sin(np.sqrt((5*x[0]) ** 2 + (5*x[1]) ** 2))
+            self.xopt = np.array([0, (np.pi/10)])
             self.opt = curve(self.xopt)
             self.d = 2
                 
@@ -78,5 +85,32 @@ class CMAB:
                 values[i,j] = self.reward_curve(x)
         plt.imshow(values, cmap='hot', interpolation='nearest')
         plt.show()
+
+    def plot_reward_curve(self, dir):
+        import matplotlib.pyplot as plt
+
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+
+        # Crea i dati per il grafico
+        x = np.linspace(-1, 1, 100)
+        y = np.linspace(-1, 1, 100)
+        X, Y = np.meshgrid(x, y)
+        def f(x,y):
+            return self.reward_curve(np.array([x,y]))
+        Z = f(X, Y)
+
+        # Plotta la funzione
+        ax.plot_surface(X, Y, Z)
+
+        # Aggiungi etichette e titolo
+        ax.set_xlabel('X axis')
+        ax.set_ylabel('Y axis')
+        ax.set_title('Funzione di due variabili')
+
+        # Mostra il grafico
+        plt.savefig(dir+'reward_curve.pdf')
+        plt.clf()
+
 
 

@@ -8,11 +8,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 deg = 3
-exp_name = 'PE_vs_linUCB_{}'.format(deg)
+curve = 'glass'
+exp_name = 'inutilePE_vs_linUCB_{}'.format(deg)+curve
 seeds = 10
 T = 10000
 
-env = CMAB()
+env = CMAB(curve=curve)
 policies = [OBlinUCB(basis = 'legendre', N=deg, pe=True), OBlinUCB(basis = 'legendre', N=deg)]
 labels = ['OB-PE', 'OB-LinUCB']
 

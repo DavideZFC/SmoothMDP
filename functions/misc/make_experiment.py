@@ -31,6 +31,7 @@ def make_experiment(policies, env, T, seeds, labels, exp_name=''):
 
     # in this dictionary, we store the running times of the algorithms
     running_times = {}
+    env.plot_reward_curve(dir)
 
     
     for i in range(len(policies)):
