@@ -49,6 +49,21 @@ class CMAB:
             self.xopt = np.array([0, (np.pi/10)])
             self.opt = curve(self.xopt)
             self.d = 2
+
+        if curve == 'concoide':
+            def curve(x):
+                a = 1
+                b = 1
+                s = (x[0]) ** 2 + (x[1]) ** 2
+                return - (s-a*x[0])**2 + b*s
+            self.d = 2
+
+        if curve == 'cardioide':
+            def curve(x):
+                a = 1
+                s = 0.5*((x[0]) ** 2 + (x[1]) ** 2)
+                return - s*(s-a*x[0]) + a**2*x[1]**2
+            self.d = 2
                 
         self.reward_curve = curve
 
@@ -99,6 +114,7 @@ class CMAB:
         def f(x,y):
             return self.reward_curve(np.array([x,y]))
         Z = f(X, Y)
+        self.opt = np.max(Z)
 
         # Plotta la funzione
         ax.plot_surface(X, Y, Z)
