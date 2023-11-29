@@ -8,7 +8,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 deg = 3
-curve = 'cardioide'
+curve = 'faglia'
 exp_name = 'deg_{}'.format(deg)+curve
 seeds = 10
 T = 10000

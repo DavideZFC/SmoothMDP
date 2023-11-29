@@ -39,15 +39,11 @@ class CMAB:
         if curve == 'gaussian':
             def curve(x):
                 return np.exp(-x[0]**2-x[1]**2)
-            self.xopt = np.zeros(2)
-            self.opt = curve(self.xopt)
             self.d = 2
 
         if curve == 'glass':
             def curve(x):
                 return np.sin(np.sqrt((5*x[0]) ** 2 + (5*x[1]) ** 2))
-            self.xopt = np.array([0, (np.pi/10)])
-            self.opt = curve(self.xopt)
             self.d = 2
 
         if curve == 'concoide':
@@ -55,7 +51,8 @@ class CMAB:
                 a = 1
                 b = 1
                 s = (x[0]) ** 2 + (x[1]) ** 2
-                return - (s-a*x[0])**2 + b*s
+                coef = 0.2
+                return coef*(- (s-a*x[0])**2 + b*s)
             self.d = 2
 
         if curve == 'cardioide':
@@ -64,6 +61,19 @@ class CMAB:
                 s = 0.5*((x[0]) ** 2 + (x[1]) ** 2)
                 return - s*(s-a*x[0]) + a**2*x[1]**2
             self.d = 2
+
+        if curve == 'cardsin':
+            def curve(x):
+                a = 5
+                s = ((a*x[0]) ** 2 + (a*x[1]) ** 2)
+                return np.sin(s) / s
+            self.d = 2
+
+        if curve == 'faglia':
+            def curve(x):
+                return 1 - (x[1])**2 - np.abs(x[0])**0.5
+            self.d = 2
+
                 
         self.reward_curve = curve
 
@@ -122,7 +132,6 @@ class CMAB:
         # Aggiungi etichette e titolo
         ax.set_xlabel('X axis')
         ax.set_ylabel('Y axis')
-        ax.set_title('Funzione di due variabili')
 
         # Mostra il grafico
         plt.savefig(dir+'reward_curve.pdf')
