@@ -8,6 +8,17 @@ import numpy as np
 
 class OBlinUCB:
     def __init__(self, basis, N, dim=2, lam=1, T=10000, pe=False):
+        '''
+        Instanciate the OBlinUCB and the OB-PE algorithms
+
+        Parameters:
+            basis (str): which basis function to use
+            N (int): degree of the basis function
+            dim (int): dimension of the problem
+            lam (double): lambda parameter for linUCB
+            T (int): time horizon
+            pe (bool): if True, we make OB-PE instead of OB-LinUCB
+        '''
 
         # what approximation degree to use
         self.N = N
@@ -30,13 +41,19 @@ class OBlinUCB:
         elif basis == 'legendre':
             self.feature_map = legendre_features
 
-        self.build_arms()
+        self.build_arms(numel=int(T**0.5))
         if pe:
             self.make_PE()
         else:
             self.make_linUCB()
    
     def build_arms(self, numel=100):
+        '''
+        Build the linear arms to feed into bandit algorithms
+
+        Parameters:
+            numel (int): in how many points to discretize the space in every dimension
+        '''
 
         # build mesh for the space
         x = np.linspace(-1,1,numel)
@@ -50,6 +67,9 @@ class OBlinUCB:
 
 
     def reset(self):
+        '''
+            Resets the algorithm
+        '''
         self.learner.reset()
 
     def make_linUCB(self):
@@ -60,8 +80,13 @@ class OBlinUCB:
         # initialize linUCB
         self.learner = PE(self.linear_arms, T=self.T)
 
-    def pull_arm(self):        
-        # ask what arm to pull
+    def pull_arm(self):
+        '''
+        Asks the linear bandit algorithms which arm to pull, and then converts their index in the actual arm
+
+        Returns:
+            _ (vector): vector corresponding to the chosen arm
+        '''
         if self.pe:
             arm = self.learner.pull_arm()
         else:
@@ -70,6 +95,9 @@ class OBlinUCB:
         return np.array([self.X[arm],self.Y[arm]])
     
     def update(self, reward):
+        '''
+        Updates learner corresponding to the last pulled arm
+        '''
         # pass from arm index to arm vector
         arm_vector = self.linear_arms[self.last_arm_pulled,:]
         # update base learner
