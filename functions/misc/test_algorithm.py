@@ -18,7 +18,7 @@ def test_algorithm(policy, env, T, seeds, first_seed=1):
     regret_matrix = np.zeros((seeds, T))
     np.random.seed(first_seed)
 
-    for seed in range(seeds):
+    for seed in range(seeds):       
 
         policy.reset()
         for t in range(1,T):
