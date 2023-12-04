@@ -69,7 +69,7 @@ class IGP_UCB():
 
     def build_arms(self, numel=100):
         '''
-        Build the linear arms to feed into bandit algorithms
+        Build the discretization of the arms
 
         Parameters:
             numel (int): in how many points to discretize the space in every dimension
