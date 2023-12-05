@@ -65,7 +65,8 @@ class CMAB:
         if curve == 'cardsin':
             def curve(x):
                 a = 5
-                s = ((a*x[0]) ** 2 + (a*x[1]) ** 2)
+                eps = 0.01
+                s = ((a*x[0]) ** 2 + (a*x[1]) ** 2) + eps
                 return np.sin(s) / s
             self.d = 2
 
