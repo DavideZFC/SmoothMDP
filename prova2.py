@@ -11,13 +11,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 deg = 3
-curve = 'faglia'
+curve = 'gaussian'
 exp_name = 'deg_{}'.format(deg)+curve
 seeds = 5
 T = 1000
 
 env = CMAB(curve=curve)
-policies = [ZOOM(T=T), IGP_UCB(T=T), UMA(N=deg, T=T), OBlinUCB(basis = 'legendre', N=deg, T=T, pe=True), OBlinUCB(basis = 'legendre', N=deg, T=T)]
-labels = ['ZOOM', 'IGP_UCB', 'UMA', 'OB-PE', 'OB-LinUCB']
+policies = [ZOOM(T=T), IGP_UCB(T=T), UMA(N=deg, T=T), OBlinUCB(basis = 'legendre', N=deg, T=T, pe=True), OBlinUCB(basis = 'fourier', N=deg, T=T, pe=True), OBlinUCB(basis = 'legendre', N=deg, T=T), OBlinUCB(basis = 'fourier', N=deg, T=T)]
+labels = ['ZOOM', 'IGP_UCB', 'UMA', 'OB-PE', 'OB-PE+F', 'OB-LinUCB', 'OB-LinUCB+F']
 
 make_experiment(policies, env, T, seeds, labels, exp_name=exp_name)

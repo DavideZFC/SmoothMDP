@@ -38,7 +38,9 @@ class CMAB:
         # Cinfty even
         if curve == 'gaussian':
             def curve(x):
-                return np.exp(-x[0]**2-x[1]**2)
+                a = 2.0
+                b = 1.0
+                return a*np.exp(-x[0]**2-x[1]**2)-b
             self.d = 2
 
         if curve == 'glass':

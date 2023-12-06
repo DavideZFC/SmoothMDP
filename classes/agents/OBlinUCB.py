@@ -36,7 +36,7 @@ class OBlinUCB:
             self.feature_map = poly_features
         elif basis == 'cosin':
             self.feature_map = cosin_features
-        elif basis == 'sincos':
+        elif basis == 'fourier':
             self.feature_map = sincos_features
         elif basis == 'legendre':
             self.feature_map = legendre_features
