@@ -18,3 +18,24 @@ def build_mesh(x,y):
     Y = np.concatenate(Y)
 
     return X,Y
+
+def generalized_build_mesh(arrays):
+    '''
+    Builds a mesh given list of x,y,z,... cooordinates
+
+    Parameters:
+    arrays (list): list of arrays of coordinates
+
+    Returns:
+    mesh_list (list): list of arrays after the meshgrid
+    '''
+    meshed = np.meshgrid(*arrays)
+
+    mesh_list = []
+    d = len(mesh_list)
+    for mesh in meshed:
+        for _ in range(d+1):
+            mesh = np.concatenate(mesh)
+        mesh_list.append(np.concatenate(mesh))
+
+    return mesh_list

@@ -118,7 +118,7 @@ class Linear_replay_buffer:
 
     def build_next_state_action_feature_map(self, state=0):
         '''
-        Calls the function build_next_state_action_mesh() andthen converts the result according to the
+        Calls the function build_next_state_action_mesh() and then converts the result according to the
         feature map
 
         Parameters:
