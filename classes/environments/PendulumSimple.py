@@ -76,6 +76,31 @@ class PendulumSimple(gym.Env):
         if self.render_mode == "human":
             self.render()
         return self._get_obs(), -costs, False, done, {}
+    
+    def query_generator(self, state_action):
+        state = state_action[:,:self.observation_space.shape[0]]
+        th, thdot = state[:,0], state[:,1]
+        u = state_action[:,-1]
+        
+
+        g = self.g
+        m = self.m
+        l = self.l
+        dt = self.dt
+
+        u = np.clip(u, -self.max_torque, self.max_torque)
+
+        # perchè dall'altra parte ho dimezzato il range
+        u = 2*u
+        costs = angle_normalize(th) ** 2 + 0.1 * thdot**2 + 0.001 * (u**2)
+        newthdot = thdot + (3 * g / (2 * l) * np.sin(th) + 3.0 / (m * l**2) * u) * dt
+
+        # modificata da me
+        newthdot = np.clip(newthdot, -8*self.max_speed, 8*self.max_speed)
+        newth = th + newthdot * dt
+
+        return np.concatenate((newth.reshape(-1,1), newthdot.reshape(-1,1)), axis=1), -costs
+
 
     def reset(self, *, seed: Optional[int] = None, options: Optional[dict] = None):
         super().reset(seed=seed)
