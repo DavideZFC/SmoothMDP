@@ -29,13 +29,20 @@ def generalized_build_mesh(arrays):
     Returns:
     mesh_list (list): list of arrays after the meshgrid
     '''
+
+    if len(arrays) < 2:
+        return arrays[0]
+
+
     meshed = np.meshgrid(*arrays)
 
     mesh_list = []
     d = len(mesh_list)
     for mesh in meshed:
-        for _ in range(d+1):
+        for cap in range(d+1):
             mesh = np.concatenate(mesh)
+            print(mesh)
+            print('ok ' + str(cap))
         mesh_list.append(np.concatenate(mesh))
 
     return mesh_list

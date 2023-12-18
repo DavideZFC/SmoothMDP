@@ -29,6 +29,7 @@ class PendulumSimple(gym.Env):
         self.g = g
         self.m = 1.0
         self.l = 1.0
+        self.time_horizon = 200
 
         self.render_mode = render_mode
 
