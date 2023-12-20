@@ -1,12 +1,16 @@
 from classes.environments.PendulumSimple import PendulumSimple
 from classes.agents.FD_LSVI import FD_LSVI
-import numpy as np
+from functions.misc.test_algorithm_after_learning import test_algorithm
 
 env = PendulumSimple()
 agent = FD_LSVI(env)
-agent.get_datasets(disc_numbers=[10,10,10])
-next_w = agent.compute_w_step(next_w=0,last_step=True)
-print(agent.get_best_future_q(state=-np.ones(2), next_w=next_w))
+state_disc = 40
+action_disc = 20
+agent.get_datasets(disc_numbers=[state_disc, state_disc, action_disc])
+agent.compute_q_values()
+
+test_algorithm(agent, env)
+
 
 
 

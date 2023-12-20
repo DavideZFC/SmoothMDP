@@ -110,8 +110,10 @@ class FD_LSVI:
             Computes the vectors w for every timestep
             '''
             self.w_vectors[self.time_horizon - 1] = self.compute_w_step(next_w=0, last_step=True)
+            print('step {} done'.format(self.time_horizon-1))
             for h in range(2,self.time_horizon+1):
                 self.w_vectors[self.time_horizon - h] = self.compute_w_step(next_w=self.w_vectors[self.time_horizon - h + 1], last_step=False)
+                print('step {} done'.format(self.time_horizon - h))
 
     def get_best_future_q(self, state=0, next_w=None):
         '''
@@ -159,5 +161,22 @@ class FD_LSVI:
             feature_maps.append(self.feature_map(aux_buffer[:, i], d=self.approx_degree))
 
         return merge_feature_maps(feature_maps)
+    
+    def choose_action(self, state, h):
+        '''
+        Chooses which action to perform based on the current state
+
+        Parameters:
+            state (vector): current state
+            h (int): current timestep
+        
+        Returns:
+            _ (vector): action to be performed on the environment
+        '''
+
+        variable_action_mesh = self.build_next_state_action_feature_map(state)
+        best_action_index = np.argmax(np.dot(variable_action_mesh, self.w_vectors[h]))
+
+        return np.array([self.action_grid[best_action_index]])
 
 

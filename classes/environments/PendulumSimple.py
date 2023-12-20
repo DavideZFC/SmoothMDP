@@ -116,7 +116,7 @@ class PendulumSimple(gym.Env):
             y = utils.verify_number_and_cast(y)
             high = np.array([x, y])
         low = -high  # We enforce symmetric limits.
-        self.state = self.np_random.uniform(low=low, high=high)
+        self.state = np.zeros(2)#self.np_random.uniform(low=low, high=high)
         self.last_u = None
         self.h = 0
 
