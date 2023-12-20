@@ -5,7 +5,7 @@ from functions.orthogonal.bases import *
 from functions.orthogonal.find_optimal_design import find_optimal_design
 
 
-def get_dataset(env, disc_numbers, approx_degree = 4, feature_map = legendre_features, action_space_dim=2):
+def get_dataset(env, disc_numbers, approx_degree = 4, feature_map = legendre_features, action_space_dim=1):
     # dimension of the state-action space
     d = len(disc_numbers)
 
@@ -55,7 +55,7 @@ def get_dataset(env, disc_numbers, approx_degree = 4, feature_map = legendre_fea
 
     new_states, rewards = env.query_generator(query_points)
 
-    return query_points, new_states, rewards, query_features
+    return query_points, new_states, rewards, query_features, action_grid
 
 
 
@@ -68,11 +68,12 @@ class FD_LSVI:
         # dimension of the state-action space
         self.feature_map = feature_map
         self.d = len(disc_numbers)
-        self.query_points, self.new_states, self.rewards, self.query_features = get_dataset(self.env, disc_numbers, approx_degree, feature_map)
+        self.query_points, self.new_states, self.rewards, self.query_features, self.action_grid = get_dataset(self.env, disc_numbers, approx_degree, feature_map)
         # how many points we have
         self.N = self.query_points.shape[0]
         self.dim = self.query_features.shape[1]
         self.w_vectors = np.zeros((self.time_horizon, self.dim))
+        self.approx_degree = approx_degree
 
         self.covariance_matrix = np.dot(self.query_features.T,self.query_features)
         self.anticov = np.linalg.inv(self.covariance_matrix)
@@ -81,6 +82,7 @@ class FD_LSVI:
         print(self.query_features.shape)
         print(self.rewards.shape)
         print(self.new_states.shape)
+        print(self.action_grid.shape)
 
     def compute_w_step(self, next_w, last_step=False):
         '''

@@ -37,12 +37,7 @@ def generalized_build_mesh(arrays):
     meshed = np.meshgrid(*arrays)
 
     mesh_list = []
-    d = len(mesh_list)
     for mesh in meshed:
-        for cap in range(d+1):
-            mesh = np.concatenate(mesh)
-            print(mesh)
-            print('ok ' + str(cap))
-        mesh_list.append(np.concatenate(mesh))
+        mesh_list.append(mesh.ravel())
 
     return mesh_list
