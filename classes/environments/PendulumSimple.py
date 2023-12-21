@@ -29,7 +29,7 @@ class PendulumSimple(gym.Env):
         self.g = g
         self.m = 1.0
         self.l = 1.0
-        self.time_horizon = 200
+        self.time_horizon = 20
 
         self.render_mode = render_mode
 
@@ -50,7 +50,7 @@ class PendulumSimple(gym.Env):
     def step(self, u):
         th, thdot = self.state  # th := theta
         self.h += 1
-        done = self.h > 199
+        done = self.h > self.time_horizon - 1
 
         g = self.g
         m = self.m
@@ -63,7 +63,7 @@ class PendulumSimple(gym.Env):
         u = 2*u
 
         self.last_u = u  # for rendering
-        costs = angle_normalize(th) ** 2 + 0.1 * thdot**2 + 0.001 * (u**2)
+        costs = - 1 + 0.1*angle_normalize(th) ** 2 + 0.1 * thdot**2 + 0.001 * (u**2)
 
         newthdot = thdot + (3 * g / (2 * l) * np.sin(th) + 3.0 / (m * l**2) * u) * dt
 
@@ -93,7 +93,7 @@ class PendulumSimple(gym.Env):
 
         # perchè dall'altra parte ho dimezzato il range
         u = 2*u
-        costs = angle_normalize(th) ** 2 + 0.1 * thdot**2 + 0.001 * (u**2)
+        costs = - 1 + 0.1*angle_normalize(th) ** 2 + 0.1 * thdot**2 + 0.001 * (u**2) #without 1+ and 0.1 the reward is normalized in [-10,0]
         newthdot = thdot + (3 * g / (2 * l) * np.sin(th) + 3.0 / (m * l**2) * u) * dt
 
         # modificata da me
@@ -116,7 +116,8 @@ class PendulumSimple(gym.Env):
             y = utils.verify_number_and_cast(y)
             high = np.array([x, y])
         low = -high  # We enforce symmetric limits.
-        self.state = np.zeros(2)#self.np_random.uniform(low=low, high=high)
+        # self.state = np.zeros(2)
+        self.state = self.np_random.uniform(low=low, high=high)
         self.last_u = None
         self.h = 0
 
