@@ -5,9 +5,10 @@ from functions.orthogonal.bases import *
 
 env = PendulumSimple()
 agent = FD_LSVI(env)
-state_disc = 100
+state_disc = 40
 action_disc = 20
-agent.get_datasets(disc_numbers=[state_disc, state_disc, action_disc], approx_degree=3, feature_map=sincos_features)
+approx_degree = 4
+agent.get_datasets(disc_numbers=[state_disc, state_disc, action_disc], approx_degree=approx_degree, feature_map=sincos_features)
 agent.compute_q_values()
 
 returns = test_algorithm(agent, env)

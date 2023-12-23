@@ -36,7 +36,7 @@ def get_dataset(env, disc_numbers, approx_degree = 4, feature_map = legendre_fea
     pi = find_optimal_design(full_feature_map)
     nonzero = np.sum(pi > 0)
 
-    big_constant = 100
+    big_constant = 1
     upper_bound = 2*nonzero + big_constant
     fixed_design = np.zeros(int(upper_bound), dtype=int)
     current_index = 0
@@ -97,14 +97,22 @@ class FD_LSVI:
             _ (vector): the w vector
         '''
         load = np.zeros(self.dim)
+        target = np.zeros(self.N)
         if step == self.time_horizon-1:
             for i in range(self.N):
-                load += self.query_features[i]*(self.rewards[i])            
+                load += self.query_features[i]*(self.rewards[i])  
+                target[i] = self.rewards[i]
         else:            
             for i in range(self.N):
                 load += self.query_features[i]*(self.rewards[i] + np.clip(self.get_best_future_q(self.new_states[i], next_w), - self.time_horizon + step + 1, self.time_horizon - step - 1))
+                target[i] = self.rewards[i] + np.clip(self.get_best_future_q(self.new_states[i], next_w), - self.time_horizon + step + 1, self.time_horizon - step - 1)
 
-        return np.linalg.solve(self.covariance_matrix, load)
+        x = np.linalg.solve(self.covariance_matrix, load)
+        print('error {} done at step {}'.format(self.eval_solution(x,target),step))
+        return x
+    
+    def eval_solution(self, x, y):
+        return np.linalg.norm(np.dot(self.query_features,x) - y)
     
     def compute_q_values(self):
             '''
@@ -128,7 +136,10 @@ class FD_LSVI:
             _ (double): optimal state value function estimated
         '''
         variable_action_mesh = self.build_next_state_action_feature_map(state)
-        return np.max(np.dot(variable_action_mesh,next_w))
+        ret = np.dot(variable_action_mesh,next_w)
+        if ret.ndim>1:
+            raise ValueError('shape {} not ok'.format(ret.shape))
+        return np.max(ret)
     
     def build_next_state_action_mesh(self, state):
         '''
