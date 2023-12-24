@@ -5,7 +5,7 @@ from functions.orthogonal.bases import *
 from functions.orthogonal.find_optimal_design import find_optimal_design
 
 
-def get_dataset(env, disc_numbers, approx_degree = 4, feature_map = legendre_features, action_space_dim=1, sig=0.05):
+def get_dataset(env, disc_numbers, approx_degree = 4, feature_map = legendre_features, action_space_dim=1, sig=0.00):
     # dimension of the state-action space
     d = len(disc_numbers)
 
@@ -52,9 +52,8 @@ def get_dataset(env, disc_numbers, approx_degree = 4, feature_map = legendre_fea
     for i in range(current_index):
         query_features[i, :] = full_feature_map[fixed_design[i], :]
         query_points[i, :] = points_vector[fixed_design[i], :]
-    query_points += np.random.normal(loc=0.0, scale=sig, size=query_points.shape)
 
-    new_states, rewards = env.query_generator(query_points)
+    new_states, rewards = env.query_generator(np.copy(query_points))
 
     return query_points, new_states, rewards, query_features, action_grid
 
@@ -115,14 +114,14 @@ class FD_LSVI:
         return np.linalg.norm(np.dot(self.query_features,x) - y)
     
     def compute_q_values(self):
-            '''
-            Computes the vectors w for every timestep
-            '''
-            self.w_vectors[self.time_horizon - 1] = self.compute_w_step(next_w=0, step=self.time_horizon - 1)
-            print('step {} done'.format(self.time_horizon-1))
-            for h in range(2,self.time_horizon+1):
-                self.w_vectors[self.time_horizon - h] = self.compute_w_step(next_w=self.w_vectors[self.time_horizon - h + 1], step=self.time_horizon - h + 1)
-                print('step {} done'.format(self.time_horizon - h))
+        '''
+        Computes the vectors w for every timestep
+        '''
+        self.w_vectors[self.time_horizon - 1] = self.compute_w_step(next_w=0, step=self.time_horizon - 1)
+        print('step {} done'.format(self.time_horizon-1))
+        for h in range(2,self.time_horizon+1):
+            self.w_vectors[self.time_horizon - h] = self.compute_w_step(next_w=self.w_vectors[self.time_horizon - h + 1], step=self.time_horizon - h + 1)
+            print('step {} done'.format(self.time_horizon - h))
 
     def get_best_future_q(self, state=0, next_w=None):
         '''
@@ -137,7 +136,7 @@ class FD_LSVI:
         '''
         variable_action_mesh = self.build_next_state_action_feature_map(state)
         ret = np.dot(variable_action_mesh,next_w)
-        if ret.ndim>1:
+        if ret.ndim > 1:
             raise ValueError('shape {} not ok'.format(ret.shape))
         return np.max(ret)
     

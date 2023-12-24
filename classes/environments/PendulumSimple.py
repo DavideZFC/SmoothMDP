@@ -29,7 +29,10 @@ class PendulumSimple(gym.Env):
         self.g = g
         self.m = 1.0
         self.l = 1.0
-        self.time_horizon = 10
+        self.time_horizon = 200
+        self.theta_normalization = np.pi
+        self.thetadot_normalization = 8
+        self.reward_normalization = 10
 
         self.render_mode = render_mode
 
@@ -47,74 +50,61 @@ class PendulumSimple(gym.Env):
         )
         self.observation_space = spaces.Box(low=-high, high=high, dtype=np.float32)
 
-    def step(self, u):
-        th, thdot = self.state  # th := theta
-        self.h += 1
-        done = self.h > self.time_horizon - 1
-
+    def original_step(self, th, thdot, u):
         g = self.g
         m = self.m
         l = self.l
         dt = self.dt
 
-        u = np.clip(u, -self.max_torque, self.max_torque)[0]
-
-        # perchè dall'altra parte ho dimezzato il range
-        u = 2*u
-
-        self.last_u = u  # for rendering
-        costs = - 1 + 0.1*angle_normalize(th) ** 2 + 0.1 * thdot**2 + 0.001 * (u**2)
-
+        costs = angle_normalize(th) ** 2 + 0.1 * thdot**2 + 0.001 * (u**2)
+        reward = -costs
         newthdot = thdot + (3 * g / (2 * l) * np.sin(th) + 3.0 / (m * l**2) * u) * dt
 
         # modificata da me
         newthdot = np.clip(newthdot, -8*self.max_speed, 8*self.max_speed)
         newth = th + newthdot * dt
 
-        # modificato da me
-        self.state = np.array([newth, newthdot/8])
+        new_state = np.concatenate((angle_normalize(newth).reshape(-1,1), newthdot.reshape(-1,1)), axis=1)
+        return new_state, reward
 
-        if self.render_mode == "human":
-            self.render()
-        return self._get_obs(), -costs, False, done, {}
+
+    def step(self, u):
+        th, thdot = self.state
+        th *= self.theta_normalization
+        thdot *= self.thetadot_normalization
+
+        self.h += 1
+        done = self.h > self.time_horizon - 1
+        u = np.clip(u, -self.max_torque, self.max_torque)[0]
+
+        original_action = 2*u
+        new_original_state, original_reward = self.original_step(th, thdot, original_action)
+
+        self.state = np.array([new_original_state[0,0]/self.theta_normalization, new_original_state[0,1]/self.thetadot_normalization])
+
+        return self.state, original_reward, False, done, {}
     
     def query_generator(self, state_action):
         state = state_action[:,:self.observation_space.shape[0]]
         th, thdot = state[:,0], state[:,1]
-        u = state_action[:,-1]
-        
+        th *= self.theta_normalization
+        thdot *= self.thetadot_normalization
 
-        g = self.g
-        m = self.m
-        l = self.l
-        dt = self.dt
+        u = state_action[:,-1]
 
         u = np.clip(u, -self.max_torque, self.max_torque)
+        original_action = 2*u
+        new_original_state, original_reward = self.original_step(th, thdot, original_action)
+        
+        newth = new_original_state[:,0]/self.theta_normalization
+        newthdot = new_original_state[:,1]/self.thetadot_normalization
 
-        # perchè dall'altra parte ho dimezzato il range
-        u = 2*u
-        costs = - 1 + 0.1*angle_normalize(th) ** 2 + 0.1 * thdot**2 + 0.001 * (u**2) #without 1+ and 0.1 the reward is normalized in [-10,0]
-        newthdot = thdot + (3 * g / (2 * l) * np.sin(th) + 3.0 / (m * l**2) * u) * dt
-
-        # modificata da me
-        newthdot = np.clip(newthdot, -8*self.max_speed, 8*self.max_speed)
-        newth = th + newthdot * dt
-
-        return np.concatenate((newth.reshape(-1,1), newthdot.reshape(-1,1)), axis=1), -costs
+        return np.concatenate((newth.reshape(-1,1), newthdot.reshape(-1,1)), axis=1), original_reward/self.reward_normalization
 
 
     def reset(self, *, seed: Optional[int] = None, options: Optional[dict] = None):
         super().reset(seed=seed)
-        if options is None:
-            high = np.array([DEFAULT_X, DEFAULT_Y])
-        else:
-            # Note that if you use custom reset bounds, it may lead to out-of-bound
-            # state/observations.
-            x = options.get("x_init") if "x_init" in options else DEFAULT_X
-            y = options.get("y_init") if "y_init" in options else DEFAULT_Y
-            x = utils.verify_number_and_cast(x)
-            y = utils.verify_number_and_cast(y)
-            high = np.array([x, y])
+        high = np.array([1,1])
         low = -high  # We enforce symmetric limits.
         # self.state = np.zeros(2)
         self.state = self.np_random.uniform(low=low, high=high)
@@ -123,11 +113,7 @@ class PendulumSimple(gym.Env):
 
         if self.render_mode == "human":
             self.render()
-        return self._get_obs(), {}
-
-    def _get_obs(self):
-        theta, thetadot = self.state
-        return np.array([theta/np.pi, thetadot], dtype=np.float32)
+        return self.state, {}
 
 
 
